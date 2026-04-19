@@ -1,43 +1,36 @@
-import { Middleware } from './middleware';
+import type { Handler } from './router';
 
-export class MiddlewareRegistry {
-  private global: Middleware[] = [];
-  private routeMap: Map<string, Middleware[]> = new Map();
+type MiddlewareName = string;
 
-  use(middleware: Middleware): this;
-  use(path: string, middleware: Middleware): this;
-  use(pathOrMiddleware: string | Middleware, middleware?: Middleware): this {
-    if (typeof pathOrMiddleware === 'string' && middleware) {
-      const existing = this.routeMap.get(pathOrMiddleware) ?? [];
-      this.routeMap.set(pathOrMiddleware, [...existing, middleware]);
-    } else if (typeof pathOrMiddleware === 'function') {
-      this.global.push(pathOrMiddleware);
-    }
-    return this;
+const registry = new Map<MiddlewareName, Handler>();
+
+export function registerMiddleware(name: MiddlewareName, handler: Handler): void {
+  if (registry.has(name)) {
+    throw new Error(`Middleware "${name}" is already registered.`);
   }
-
-  resolve(path: string): Middleware[] {
-    const routeSpecific: Middleware[] = [];
-    for (const [pattern, middlewares] of this.routeMap.entries()) {
-      if (path.startsWith(pattern)) {
-        routeSpecific.push(...middlewares);
-      }
-    }
-    return [...this.global, ...routeSpecific];
-  }
-
-  clearGlobal(): void {
-    this.global = [];
-  }
-
-  clearRoute(path: string): void {
-    this.routeMap.delete(path);
-  }
-
-  clearAll(): void {
-    this.global = [];
-    this.routeMap.clear();
-  }
+  registry.set(name, handler);
 }
 
-export const registry = new MiddlewareRegistry();
+export function getMiddleware(name: MiddlewareName): Handler {
+  const handler = registry.get(name);
+  if (!handler) {
+    throw new Error(`Middleware "${name}" not found in registry.`);
+  }
+  return handler;
+}
+
+export function unregisterMiddleware(name: MiddlewareName): void {
+  registry.delete(name);
+}
+
+export function listMiddleware(): MiddlewareName[] {
+  return Array.from(registry.keys());
+}
+
+export function clearRegistry(): void {
+  registry.clear();
+}
+
+export function resolveMiddlewares(names: MiddlewareName[]): Handler[] {
+  return names.map(getMiddleware);
+}

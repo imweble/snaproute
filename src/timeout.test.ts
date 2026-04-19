@@ -50,4 +50,13 @@ describe('timeout middleware', () => {
     jest.advanceTimersByTime(600);
     expect(next).toHaveBeenCalledTimes(1);
   });
+
+  it('does not fire after response closes', () => {
+    const { req, res } = mockReqRes();
+    const next = jest.fn();
+    timeout({ ms: 500 })(req, res, next);
+    res.emit('close');
+    jest.advanceTimersByTime(600);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
 });

@@ -37,11 +37,14 @@ export function rateLimit(options: RateLimitOptions = {}): Middleware {
     record.count += 1;
     store.set(ip, record);
 
+    const remaining = Math.max(0, max - record.count);
+
     res.setHeader('X-RateLimit-Limit', String(max));
-    res.setHeader('X-RateLimit-Remaining', String(Math.max(0, max - record.count)));
+    res.setHeader('X-RateLimit-Remaining', String(remaining));
     res.setHeader('X-RateLimit-Reset', String(Math.ceil(record.resetAt / 1000)));
 
     if (record.count > max) {
+      res.setHeader('Retry-After', String(Math.ceil((record.resetAt - now) / 1000)));
       res.writeHead(429, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: message }));
       return;

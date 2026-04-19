@@ -1,12 +1,17 @@
 export { createRouter } from './router';
 export { createServer } from './server';
 export { compose, logger, json } from './middleware';
-export { cors } from './cors';
+export { registerMiddleware, getMiddleware, unregisterMiddleware, listMiddleware, clearRegistry } from './middlewareRegistry';
+export { toRoutePath, scanDir } from './fileRouter';
 export { rateLimit, clearStore } from './rateLimit';
-export { cacheMiddleware, setCache, getCache, clearCache } from './cache';
-export {
-  registerMiddleware,
-  getMiddleware,
-  resolveMiddlewares,
-  listMiddleware,
-} from './middlewareRegistry';
+export { cors } from './cors';
+export { cacheMiddleware, setCache, getCache, deleteCache, clearCache, cacheSize } from './cache';
+export { configureCaching, getCacheConfig, isCachingEnabled } from './cache.config';
+export { bearerAuth, apiKeyAuth } from './auth';
+export { validateBody } from './validation';
+export { createError, errorHandler, notFound } from './errorHandler';
+export { asyncHandler } from './asyncHandler';
+export { requestLogger, setLogHandler, resetLogHandler } from './requestLogger';
+export { configureRequestLogger, getRequestLoggerConfig, isRequestLoggingEnabled, resetRequestLoggerConfig } from './requestLogger.config';
+export { compress } from './compress';
+export { configureCompression, getCompressionConfig, isCompressionEnabled, resetCompressionConfig } from './compress.config';

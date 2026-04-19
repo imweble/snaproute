@@ -1,0 +1,9 @@
+node_modules/
+.cache/
+*.log
+coverage/
+.next/
+*.js.map
+build/
+.env
+dist/

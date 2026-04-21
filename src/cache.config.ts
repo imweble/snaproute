@@ -16,6 +16,12 @@ const defaultConfig: AppCacheConfig = {
 
 let activeConfig: AppCacheConfig = { ...defaultConfig };
 
+/**
+ * Configures the caching layer with the provided options.
+ * Merges the given config with defaults and registers the cache middleware
+ * if caching is enabled. Safe to call multiple times — duplicate middleware
+ * registration is silently ignored.
+ */
 export function configureCaching(config: Partial<AppCacheConfig> = {}): void {
   activeConfig = { ...defaultConfig, ...config };
 
@@ -31,10 +37,24 @@ export function configureCaching(config: Partial<AppCacheConfig> = {}): void {
   }
 }
 
+/**
+ * Returns a shallow copy of the currently active cache configuration.
+ */
 export function getCacheConfig(): AppCacheConfig {
   return { ...activeConfig };
 }
 
+/**
+ * Returns whether caching is currently enabled.
+ */
 export function isCachingEnabled(): boolean {
   return activeConfig.enabled;
+}
+
+/**
+ * Resets the cache configuration back to the default values.
+ * Useful for testing or when reinitialising the application.
+ */
+export function resetCacheConfig(): void {
+  activeConfig = { ...defaultConfig };
 }

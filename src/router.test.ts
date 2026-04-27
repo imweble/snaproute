@@ -45,4 +45,18 @@ describe('Router', () => {
     expect(router.match('GET', '/items')).not.toBeNull();
     expect(router.match('POST', '/items')).not.toBeNull();
   });
+
+  test('returns the correct handler for a matched route', () => {
+    const handler = jest.fn();
+    router.register('GET', '/users', handler);
+    const result = router.match('GET', '/users');
+    expect(result?.handler).toBe(handler);
+  });
+
+  test('returns the correct handler for a dynamic route', () => {
+    const handler = jest.fn();
+    router.register('GET', '/users/:id', handler);
+    const result = router.match('GET', '/users/42');
+    expect(result?.handler).toBe(handler);
+  });
 });
